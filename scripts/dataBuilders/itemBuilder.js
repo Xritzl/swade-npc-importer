@@ -48,7 +48,7 @@ export const EdgeBuilder = async function (edges) {
                     edge.name = capitalize(element)
                     edge.type = SwadeItems.EDGE;
                     edge.data = {
-                        isArcaneBackground: element.includes("Arcane") ? true : false
+                        isArcaneBackground: element.includes(game.i18n.localize("Builder.Arcane")) ? true : false
                     }
                     edge.img = "systems/swade/assets/icons/edge.svg";
                     allEdges.push(edge);

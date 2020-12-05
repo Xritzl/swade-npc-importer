@@ -2,7 +2,6 @@
 export const thisModule = "swade-npc-importer";
 
 // module defaults and registered settings
-export const defaultPackage = "swade-compendium";
 export const settingPackageToUse = "packageToUse";
 export const settingAdditionalTraits = "additionalStats";
 export const settingDefaultDisposition = "defaultDisposition";
@@ -27,29 +26,29 @@ export const gearParsingRegex = /(^[\w\s]+)(\(([^()]+)\))?,?/gi;
 export const meleeDamageRegex = /Str\.|Str[\+\-](\d+)?d?(\d+)?[\+\-]?(\d+)?d?(\d+)/g;
 export const weaponRangeRegex = /\d+\/\d+\/\d+/g;
 export const armorModRegex = /\+\d+/;
-export const parryModRegex = /(\+\d|\-\d) Parry/gi;
-export const coverModRegex = /(\+\d|\-\d) Cover/gi;
+export const parryModRegex = new RegExp(`(+\\d|\\-\\d) ${game.i18n.localize("Parser.Parry")}`, "gi")  // /(\+\d|\-\d) Parry/gi;
+export const coverModRegex = new RegExp(`(+\\d|\\-\\d) ${game.i18n.localize("Parser.Cover")}`, "gi")  // /(\+\d|\-\d) Cover/gi;
 
 // traits to use
-export const attributesAndSkills = ["Attributes:", "Skills:"];
-export const supportedListStats = ["Hindrances:", "Edges:", "Powers:"];
-export const baseStats = ["Pace:", "Parry:", "Toughness:", "Power Points:"];
-export const gear = ["Gear:"];
-export const supportedBulletListStats = ["Special Abilities", "Super Powers"];
+export const attributesAndSkills = [`${game.i18n.localize("Parser.Attributes")}:`, `${game.i18n.localize("Parser.Skills")}:`];
+export const supportedListStats = [`${game.i18n.localize("Parser.Hindrances")}:`,`${game.i18n.localize("Parser.Edges")}:`,`${game.i18n.localize("Parser.Powers")}:`];
+export const baseStats = [`${game.i18n.localize("Parser.Pace")}:`,`${game.i18n.localize("Parser.Parry")}:`,`${game.i18n.localize("Parser.Toughness")}:`, ,`${game.i18n.localize("Parser.PowerPoints")}:`];
+export const gear = [`${game.i18n.localize("Parser.Gear")}:`];
+export const supportedBulletListStats = [`${game.i18n.localize("Parser.SpecialAbilities")}:`, `${game.i18n.localize("Parser.SuperPowers")}:`];
 export const allStatBlockEntities = attributesAndSkills.concat(supportedListStats, baseStats, supportedBulletListStats, gear);
 
-export const UnshakeBonus = ['undead', 'construct', 'combat reflexes'];
-export const IgnoreWound = ['undead', 'construct', 'elemental'];
+export const UnshakeBonus = [`${game.i18n.localize("Parser.undead")}`, `${game.i18n.localize("Parser.construct")}`, `${game.i18n.localize("Parser.combatReflexes")}`];
+export const IgnoreWound = [`${game.i18n.localize("Parser.undead")}`, `${game.i18n.localize("Parser.construct")}`, `${game.i18n.localize("Parser.elemental")}`];
 
 export const SwadeItems = {
-    SKILL: 'skill',
-    EDGE: 'edge',
-    HINDRANCE: 'hindrance',
-    POWER: 'power',
-    SHIELD: 'shield',
-    ARMOR: 'armor',
-    WEAPON: 'weapon',
-    GEAR: 'gear'
+    SKILL: `${game.i18n.localize("Parser.Skill")}`,
+    EDGE: `${game.i18n.localize("Parser.Edge")}`,
+    HINDRANCE: `${game.i18n.localize("Parser.Hindrance")}`,
+    POWER: `${game.i18n.localize("Parser.Power")}`,
+    SHIELD: `${game.i18n.localize("Parser.Shield")}`,
+    ARMOR: `${game.i18n.localize("Parser.Armor")}`,
+    WEAPON: `${game.i18n.localize("Parser.Weapon")}`,
+    GEAR: `${game.i18n.localize("Parser.Gear")}`
 }
 
 export const GetMeleeDamage = function(abilityDescription){

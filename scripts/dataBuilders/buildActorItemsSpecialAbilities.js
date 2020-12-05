@@ -4,7 +4,7 @@ import { diceRegex, meleeDamageRegex, GetMeleeDamage, GetArmorBonus } from "../g
 export const SpecialAbilitiesParser = async function (specialAbilitiesData) {
     let specialAbitlitiesItems = [];
     for (const elem in specialAbilitiesData) {
-        if (elem.toLocaleLowerCase().startsWith("armor")) {
+        if (elem.toLocaleLowerCase().startsWith(game.i18n.localize("Builder.Armor"))) {
             let armorBonus = GetArmorBonus(elem);
             specialAbitlitiesItems.push(await ArmorBuilder(elem, armorBonus, specialAbilitiesData[elem]))
         }
@@ -28,7 +28,7 @@ export const SpecialAbilitiesForDescription = function (specialAbilitiesData) {
 }
 
 function CreateHtmlList(text) {
-    let html = `<hr><h3><strong>Special Abilities</strong></h3><ul>`
+    let html = `<hr><h3><strong>${game.i18n.localize("Builder.SpecialAbilities")}</strong></h3><ul>`
     text.forEach(element => {
         html = html.concat(`<li>${element}</li>`);
     });

@@ -9,7 +9,7 @@ export const BuildActorData = async function (parsedData, isWildCard) {
     data.attributes = generateAttributes(parsedData),
         data.stats = {
             speed: {
-                runningDie: findRunningDie(parsedData['Special Abilities']),
+                runningDie: findRunningDie(parsedData[game.i18n.localize("Parser.SpecialAbilities")]),
                 value: parsedData.Pace
             },
             toughness: {
@@ -25,8 +25,8 @@ export const BuildActorData = async function (parsedData, isWildCard) {
         autoCalcToughness: true
     }
     data.powerPoints = {
-        value: parsedData['Power Points'],
-        max: parsedData['Power Points']
+        value: parsedData[game.i18n.localize("Parser.PowerPoints")],
+        max: parsedData[game.i18n.localize("Parser.PowerPoints")]
     }
     data.wounds = {
         max: calculateWoundMod(parsedData.Size, isWildCard),
@@ -55,8 +55,8 @@ function generateAttributes(parsedData) {
 }
 
 function buildBioAndSpecialAbilities(parsedData) {
-    if (parsedData['Special Abilities'] != undefined) {
-        let specialAbsHtml = SpecialAbilitiesForDescription(parsedData['Special Abilities'])
+    if (parsedData[game.i18n.localize("Parser.SpecialAbilities")] != undefined) {
+        let specialAbsHtml = SpecialAbilitiesForDescription(parsedData[game.i18n.localize("Parser.SpecialAbilities")])
         return parsedData.Biography.value.concat(specialAbsHtml);
     }
     return parsedData.Biography.value;    
@@ -96,13 +96,13 @@ function initiativeMod(edges) {
         let hasLevelHeaded = false;
         let hasImpLevelHeaded = false;
         edges.forEach(element => {
-            if (element.includes("Hesitant")) {
+            if (element.includes(game.i18n.localize("Parser.Hesitant"))) {
                 hasHesitant = true;
             }
-            if (element.includes("Level Headed")) {
+            if (element.includes(game.i18n.localize("Parser.LevelHeaded"))) {
                 hasLevelHeaded = true;
             }
-            if (element.includes("Level Headed (Imp)")) {
+            if (element.includes(game.i18n.localize("Parser.LevelHeadedImp"))) {
                 hasImpLevelHeaded = true;
             }
         });
@@ -117,7 +117,7 @@ function initiativeMod(edges) {
 
 function findRunningDie(abilities) {
     for (const ability in abilities) {
-        if (ability.toLowerCase().includes("speed")) {
+        if (ability.toLowerCase().includes(game.i18n.localize("Parser.SpecialAbilities"))) {
             return parseInt(abilities[ability].match(global.diceRegex)[0].replace('d', ''))
         }
     }
@@ -125,7 +125,7 @@ function findRunningDie(abilities) {
 
 function calculateIgnoredWounds(parsedData) {
     let bonusTotal = 0;
-    for (const ability in parsedData['Special Abilities']) {
+    for (const ability in parsedData[game.i18n.localize("Parser.SpecialAbilities")]) {
         if (global.IgnoreWound.includes((ability.toLowerCase()))) {
             bonusTotal += 1;
         }
@@ -135,7 +135,7 @@ function calculateIgnoredWounds(parsedData) {
 
 function findUnshakeBonus(parsedData) {
     let bonusTotal = 0;
-    for (const ability in parsedData['Special Abilities']) {
+    for (const ability in parsedData[game.i18n.localize("Parser.SpecialAbilities")]) {
         if (global.UnshakeBonus.includes((ability.toLowerCase()))) {
             bonusTotal += 2;
         }

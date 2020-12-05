@@ -23,7 +23,7 @@ export const StatBlockParser = async function (clipData) {
         return importedActor;
     } catch (error) {
         log(`Failed to prase: ${error}`);
-        ui.notifications.error("Failed to parse. Not a valid statblock.")
+        ui.notifications.error(game.i18n.localize("Parser.NotValidStablock"))
     }
 }
 
@@ -76,7 +76,7 @@ function GetNameAndDescription(nameAndDescription) {
 }
 
 function GetAttributes(sections) {
-    let trait = "Attributes:";
+    let trait = `${game.i18n.localize("Parser.Attributes")}:`;
     let attributes = SplitAndTrim(sections.find(x => x.includes(trait)).replace(trait, ''), ',');
     let attributesDict = {};
     attributes.forEach(singleTrait => {
@@ -115,7 +115,7 @@ function GetAttributes(sections) {
 }
 
 function GetSkills(sections) {
-    let trait = "Skills:";
+    let trait = `${game.i18n.localize("Parser.Skills")}:`;
     let skills = SplitAndTrim(sections.find(x => x.includes(trait)).replace(trait, ''), ',');
     let skillsDict = {};
     skills.forEach(singleTrait => {
@@ -261,7 +261,7 @@ function SplitAndTrim(stringToSplit, separator) {
 
 function GetSize(abilities) {
     for (const ability in abilities) {
-        if (ability.toLowerCase().includes("size")) {
+        if (ability.toLowerCase().includes(game.i18n.localize("Parser.size"))) {
             return parseInt(ability.split(" ")[1].replace('−','-'));
         }
     }
