@@ -1,5 +1,9 @@
 import { log } from "./global.js";
 import * as global from "./global.js";
+import * as textUtils from "./utils/textUtils.js";
+import * as parsHelpers from "./utils/parsingHelpers.js";
+// import * as statEntities from "./utils/statblockEntities.js";
+import * as regexs from "./utils/regexs.js";
 import { getModuleSettings, getActorAddtionalStats} from "./foundryActions.js";
 
 
@@ -17,7 +21,7 @@ export const StatBlockParser = async function (clipData) {
         Object.assign(importedActor, await GetGear(sections));
         Object.assign(importedActor, getSystemDefinedStats(sections));
 
-        importedActor.Size = GetSize(importedActor["Special Abilities"]);
+        importedActor.Size = GetSize(importedActor[game.i18n.localize("Parser.SpecialAbilities")]);
         log(`Prased data: ${JSON.stringify(importedActor, null, 4)}`)
 
         return importedActor;
@@ -47,8 +51,22 @@ function GetSections(inData) {
     return sections;
 }
 
-function GetSectionsIndex(inData) {    
-    let allStats = global.allStatBlockEntities.concat(getActorAddtionalStats());
+function GetSectionsIndex(inData) {
+    const allStatBlockEntities = [
+        `${game.i18n.localize("Parser.Attributes")}:`,
+        `${game.i18n.localize("Parser.Skills")}:`,
+        `${game.i18n.localize("Parser.Hindrances")}:`,
+        `${game.i18n.localize("Parser.Edges")}:`,
+        `${game.i18n.localize("Parser.Powers")}:`,
+        `${game.i18n.localize("Parser.Pace")}:`,
+        `${game.i18n.localize("Parser.Parry")}:`,
+        `${game.i18n.localize("Parser.Toughness")}:`,
+        `${game.i18n.localize("Parser.PowerPoints")}:`,
+        `${game.i18n.localize("Parser.Gear")}:`,
+        `${game.i18n.localize("Parser.SpecialAbilities")}:`,
+        `${game.i18n.localize("Parser.SuperPowers")}:`
+    ];    
+    let allStats = allStatBlockEntities.concat(getActorAddtionalStats());
     let sectionsIndex = [];
     allStats.forEach(element => {
         let index = inData.indexOf(element);
@@ -63,10 +81,10 @@ function GetSectionsIndex(inData) {
 
 function GetNameAndDescription(nameAndDescription) {
     let nameDesc = {}
-    let lines = nameAndDescription.split(global.newLineRegex);
-    nameDesc.Name = global.capitalizeEveryWord(lines[0]);
+    let lines = nameAndDescription.split(regexs.newLineRegex);
+    nameDesc.Name = textUtils.capitalizeEveryWord(lines[0]);
     lines.shift();
-    let bio = lines.join(" ").replace(global.newLineRegex, " ").trim();
+    let bio = lines.join(" ").replace(regexs.newLineRegex, " ").trim();
     if (lines.length > 0) {
         nameDesc.Biography = {
             value: bio
@@ -86,8 +104,8 @@ function GetAttributes(sections) {
         }
 
         let diceAndMode = [];
-        if (global.diceRegex.test(singleTrait)){
-            diceAndMode = singleTrait.match(global.diceRegex)[0].toString();
+        if (regexs.diceRegex.test(singleTrait)){
+            diceAndMode = singleTrait.match(regexs.diceRegex)[0].toString();
             let traitName = singleTrait.replace(diceAndMode, '').trim().replace(' )', ')');
             let traitDice = diceAndMode.includes("+") ? diceAndMode.split("+")[0] : diceAndMode.split("-")[0];
             let traitMod = diceAndMode.includes("+")
@@ -119,7 +137,7 @@ function GetSkills(sections) {
     let skills = SplitAndTrim(sections.find(x => x.includes(trait)).replace(trait, ''), ',');
     let skillsDict = {};
     skills.forEach(singleTrait => {
-        let diceAndMode = singleTrait.match(global.diceRegex)[0].toString();
+        let diceAndMode = singleTrait.match(regexs.diceRegex)[0].toString();
 
         let traitName = singleTrait.replace(diceAndMode, '').trim().replace(' )', ')');
         let traitDice = diceAndMode.includes("+") ? diceAndMode.split("+")[0] : diceAndMode.split("-")[0];
@@ -136,8 +154,15 @@ function GetSkills(sections) {
 }
 
 function GetBaseStats(sections) {
+    const stats = [
+        `${game.i18n.localize("Parser.Pace")}:`,
+        `${game.i18n.localize("Parser.Parry")}:`,
+        `${game.i18n.localize("Parser.Toughness")}:`,
+        `${game.i18n.localize("Parser.PowerPoints")}:`
+    ];
+
     let baseStats = {};
-    global.baseStats.forEach(element => {
+    stats.forEach(element => {
         let stat = sections.find(x => x.includes(element));
         if (stat != undefined) {
             stat = sections.find(x => x.includes(element)).split(':');
@@ -148,11 +173,17 @@ function GetBaseStats(sections) {
 }
 
 function GetListsStats(sections) {
+    const supportedListStats = [
+        `${game.i18n.localize("Parser.Hindrances")}:`,
+        `${game.i18n.localize("Parser.Edges")}:`,
+        `${game.i18n.localize("Parser.Powers")}:`
+    ];
+
     let listStats = {};
-    global.supportedListStats.forEach(element => {
+    supportedListStats.forEach(element => {
         var line = sections.find(x => x.includes(element));
         if (line != undefined) {
-            line = line.replace(global.newLineRegex, ' ').replace('.', '');
+            line = line.replace(regexs.newLineRegex, ' ').replace('.', '');
             line = line.split(':');
             if (line[1].match(new RegExp(/\w+/gi))) {
                 listStats[line[0]] = line[1].split(',').map(s => s.trim());
@@ -163,8 +194,13 @@ function GetListsStats(sections) {
 }
 
 function GetBulletListStats(sections) {
+    const supportedBulletListStats = [
+        `${game.i18n.localize("Parser.SpecialAbilities")}:`,
+        `${game.i18n.localize("Parser.SuperPowers")}:`
+    ];
+
     var bulletListStats = {};
-    global.supportedBulletListStats.forEach(bulletList => {
+    supportedBulletListStats.forEach(bulletList => {
         let abilities = {}
         var line = sections.find(x => x.includes(bulletList));
         if (line != undefined) {
@@ -172,7 +208,7 @@ function GetBulletListStats(sections) {
             line.shift();
             line.forEach(element => {
                 let ability = element.split(':');
-                abilities[ability[0].trim()] = ability.length == 2 ? ability[1].replace(global.newLineRegex, " ").trim() : ability[0];
+                abilities[ability[0].trim()] = ability.length == 2 ? ability[1].replace(regexs.newLineRegex, " ").trim() : ability[0];
             });
             bulletListStats[bulletList.replace(':', '')] = abilities;
         }
@@ -181,12 +217,13 @@ function GetBulletListStats(sections) {
 }
 
 async function GetGear(sections) {
+    const gearStat = `${game.i18n.localize("Parser.Gear")}:`
     try {
         let characterGear = []
-        let gearLine = sections.find(x => x.includes("Gear:")).replace(global.newLineRegex, ' ').replace("Gear: ", '');
+        let gearLine = sections.find(x => x.includes(gearStat)).replace(regexs.newLineRegex, ' ').replace(`${gearStat} `, '');
         while (gearLine.length > 0) {
-            if (global.gearParsingRegex.test(gearLine)) {
-                let match = gearLine.match(global.gearParsingRegex)[0];
+            if (regexs.gearParsingRegex.test(gearLine)) {
+                let match = gearLine.match(regexs.gearParsingRegex)[0];
                 characterGear.push(match.trim());
                 gearLine = gearLine.replace(match, '');
             } else {
@@ -209,13 +246,14 @@ async function ParseGear(gearArray) {
             gearDict[gear] = null;
         }
         // check if armor
-        else if (global.armorModRegex.test(splitGear[1]) || splitGear[0].toLowerCase().includes('armor')) {
+        else if (regexs.armorModRegex.test(splitGear[1]) || splitGear[0].toLowerCase().includes(game.i18n.localize("Builder.Armor"))) {
             gearDict[splitGear[0]] = { armorBonus: parseInt(splitGear[1].replace(',')) }
         }
         // check if shield
-        else if (global.parryModRegex.test(splitGear[1]) || splitGear[0].toLowerCase().includes('shield')) {
-            let parry = global.GetParryBonus(splitGear[1]);
-            let cover = global.GetCoverBonus(splitGear[1]);            
+        
+        else if ((new RegExp(`(\\+\d|\\-\d) ${game.i18n.localize("Praser.Parry")}`)).test(splitGear[1]) || splitGear[0].toLowerCase().includes(game.i18n.localize("Builder.Shield"))) {
+            let parry = parsHelpers.GetParryBonus(splitGear[1]);
+            let cover = parsHelpers.GetCoverBonus(splitGear[1]);            
             gearDict[splitGear[0]] = { parry: parry, cover: cover }
         }
         // parse weapon
@@ -255,7 +293,7 @@ function getSystemDefinedStats(sections){
 
 function SplitAndTrim(stringToSplit, separator) {
     return stringToSplit.split(separator).map(function (item) {
-        return item.replace(global.newLineRegex, ' ').trim();
+        return item.replace(regexs.newLineRegex, ' ').trim();
     });
 }
 
@@ -267,3 +305,31 @@ function GetSize(abilities) {
     }
     return 0;
 }
+
+
+// const attributesAndSkills = [
+//     `${game.i18n.localize("Parser.Attributes")}:`,
+//     `${game.i18n.localize("Parser.Skills")}:`
+// ];
+
+// const supportedListStats = [
+//     `${game.i18n.localize("Parser.Hindrances")}:`,
+//     `${game.i18n.localize("Parser.Edges")}:`,
+//     `${game.i18n.localize("Parser.Powers")}:`
+// ];
+
+// const baseStats = [
+//     `${game.i18n.localize("Parser.Pace")}:`,
+//     `${game.i18n.localize("Parser.Parry")}:`,
+//     `${game.i18n.localize("Parser.Toughness")}:`,
+//     `${game.i18n.localize("Parser.PowerPoints")}:`
+// ];
+
+// const gear = [`${game.i18n.localize("Parser.Gear")}:`];
+
+// const supportedBulletListStats = [
+//     `${game.i18n.localize("Parser.SpecialAbilities")}:`,
+//     `${game.i18n.localize("Parser.SuperPowers")}:`
+// ];
+
+// const allStatBlockEntities = attributesAndSkills.concat(supportedListStats, baseStats, supportedBulletListStats, gear);

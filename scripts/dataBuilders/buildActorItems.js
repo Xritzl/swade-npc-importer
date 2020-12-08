@@ -1,7 +1,6 @@
 import * as itemBuilder from "./itemBuilder.js";
 import { SpecialAbilitiesParser } from "./buildActorItemsSpecialAbilities.js"
 import { ItemGearBuilder } from "./buildActorGear.js";
-import { log } from "../global.js";
 
 export const BuildActorItems = async function(parsedData) {
     let items = [];

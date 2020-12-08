@@ -27,6 +27,7 @@
     "Parser.Pace" : "Pace",
     "Parser.Parry" : "Parry",
     "Parser.Cover" : "Cover",
+    "Parser.Armor" : "armor",
     "Parser.Toughness" : "Toughness",
     "Parser.PowerPoints" : "Power Points",
     "Parser.Gear" : "Gear",

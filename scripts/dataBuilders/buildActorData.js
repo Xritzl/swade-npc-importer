@@ -1,5 +1,6 @@
 import { getActorAddtionalStats, getSpecificAdditionalStat } from "../foundryActions.js";
-import * as global from "../global.js";
+// import * as statEntities from "../utils/statblockEntities.js";
+import * as regexs from "../utils/regexs.js";
 import { SpecialAbilitiesForDescription } from "./buildActorItemsSpecialAbilities.js"
 import { additionalStatsBuilder } from "./itemBuilder.js";
 
@@ -59,7 +60,7 @@ function buildBioAndSpecialAbilities(parsedData) {
         let specialAbsHtml = SpecialAbilitiesForDescription(parsedData[game.i18n.localize("Parser.SpecialAbilities")])
         return parsedData.Biography.value.concat(specialAbsHtml);
     }
-    return parsedData.Biography.value;    
+    return parsedData.Biography.value;
 }
 
 async function buildAdditionalStats(parsedData) {
@@ -118,15 +119,21 @@ function initiativeMod(edges) {
 function findRunningDie(abilities) {
     for (const ability in abilities) {
         if (ability.toLowerCase().includes(game.i18n.localize("Parser.SpecialAbilities"))) {
-            return parseInt(abilities[ability].match(global.diceRegex)[0].replace('d', ''))
+            return parseInt(abilities[ability].match(regexs.diceRegex)[0].replace('d', ''))
         }
     }
 }
 
 function calculateIgnoredWounds(parsedData) {
+    const IgnoreWound = [
+        `${game.i18n.localize("Parser.undead")}`,
+        `${game.i18n.localize("Parser.construct")}`,
+        `${game.i18n.localize("Parser.elemental")}`
+    ];
+
     let bonusTotal = 0;
     for (const ability in parsedData[game.i18n.localize("Parser.SpecialAbilities")]) {
-        if (global.IgnoreWound.includes((ability.toLowerCase()))) {
+        if (IgnoreWound.includes((ability.toLowerCase()))) {
             bonusTotal += 1;
         }
     }
@@ -134,16 +141,22 @@ function calculateIgnoredWounds(parsedData) {
 }
 
 function findUnshakeBonus(parsedData) {
+    const UnshakeBonus = [
+        `${game.i18n.localize("Parser.undead")}`,
+        `${game.i18n.localize("Parser.construct")}`,
+        `${game.i18n.localize("Parser.combatReflexes")}`
+    ];
+
     let bonusTotal = 0;
     for (const ability in parsedData[game.i18n.localize("Parser.SpecialAbilities")]) {
-        if (global.UnshakeBonus.includes((ability.toLowerCase()))) {
+        if (UnshakeBonus.includes((ability.toLowerCase()))) {
             bonusTotal += 2;
         }
     }
 
     if (parsedData.Edges != undefined) {
         parsedData.Edges.forEach(edge => {
-            if (global.UnshakeBonus.includes((edge.toLowerCase()))) {
+            if (UnshakeBonus.includes((edge.toLowerCase()))) {
                 bonusTotal += 2;
             }
         });

@@ -3,9 +3,7 @@ import { log, settingDefaultActorType, settingDefaultDisposition, settingDefault
 import { NpcImporterSettings } from "./settings/npcImporterSettings.js";
 import { getModuleSettings, getAllActorFolders, updateModuleSetting, getAllActiveCompendiums } from "./foundryActions.js";
 
-Hooks.once("init", async () => {
-
-});
+// Hooks.once("init", async () => {});
 // Hooks.once("setup", () => {});
 Hooks.on("ready", async () => {
     log("Setting up settings...");
